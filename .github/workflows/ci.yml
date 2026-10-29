@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "24"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Cache Sonar packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: |
+            ${{ runner.os }}-sonar
+
+      - name: Build, test and generate coverage
+        run: ./app/gradlew -p app clean build jacocoTestReport
+
+      - name: Sonar analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./app/gradlew -p app build sonar --info
