@@ -1,4 +1,5 @@
 # Менеджер задач (Java)
+[![Build Status](https://travis-ci.com/username/projectname.svg?branch=master)](https://travis-ci.com/username/projectname)
 
 [![hexlet-check](https://github.com/CharNatalia/java-project-99/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/CharNatalia/java-project-99/actions)
 
