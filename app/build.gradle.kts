@@ -27,15 +27,22 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-h2console")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.mapstruct:mapstruct:1.6.3")
+    implementation("org.openapitools:jackson-databind-nullable:0.2.11")
+
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
 
     runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("com.h2database:h2")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
-    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("net.javacrumbs.json-unit:json-unit-assertj:6.2.0")
+    testImplementation("org.instancio:instancio-junit:5.6.0")
+    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+    testAnnotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
 }
 
 tasks.withType<Test> {
