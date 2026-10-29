@@ -2,6 +2,9 @@ package hexlet.code.app.model;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
@@ -24,11 +27,18 @@ public class User {
 
     private String firstName;
     private String lastName;
+
+
+    @NotBlank(message = "Email обязателен")
+    @Email(message = "Некорректный email")
     private String email;
+
+    @NotBlank(message = "Пароль обязателен")
+    @Size(min = 3)
     private String password;
 
     @CreatedDate
-    @Column(name = "createdAt", nullable = false, updatable = false)
+    @Column(updatable = false)
     private LocalDate createdAt;
 
     @LastModifiedDate
