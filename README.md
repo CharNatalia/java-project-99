@@ -1,7 +1,7 @@
 # Менеджер задач (Java)
 [![CI](https://github.com/CharNatalia/java-project-99/actions/workflows/ci.yml/badge.svg)](https://github.com/CharNatalia/java-project-99/actions/workflows/ci.yml)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=CharNatalia_hexlet-spring-blog&metric=coverage)](https://sonarcloud.io/summary/new_code?id=CharNatalia_hexlet-spring-blog)
-[![Quality gate status](https://sonarcloud.io/api/project_badges/measure?project=CharNatalia_hexlet-spring-blog&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=CharNatalia_hexlet-spring-blog)
+[![Quality gate status](https://sonarcloud.io/api/project_badges/measure?project=CharNatalia_java-project-99&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=CharNatalia_java-project-99)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=CharNatalia_java-project-99&metric=coverage)](https://sonarcloud.io/summary/new_code?id=CharNatalia_java-project-99)
 
 [![hexlet-check](https://github.com/CharNatalia/java-project-99/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/CharNatalia/java-project-99/actions)
 
