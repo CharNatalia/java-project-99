@@ -47,6 +47,7 @@ public class UserService {
         var user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User with id = " + id + " not found"));
         userMapper.update(userUpdateDTO, user);
+        user.setPassword(passwordEncoder.encode(userUpdateDTO.getPassword()));
         return userMapper.map(userRepository.save(user));
     }
 

@@ -20,6 +20,7 @@ public abstract class UserMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "password", ignore = true)
     public abstract User map(UserCreateDTO userCreateDTO);
 
     public abstract UserDTO map(User user);
@@ -29,8 +30,6 @@ public abstract class UserMapper {
     @Mapping(target = "firstName", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "password", ignore = true)
     public abstract void update(UserUpdateDTO userUpdateDTO, @MappingTarget User user);
-
-
-
 }
