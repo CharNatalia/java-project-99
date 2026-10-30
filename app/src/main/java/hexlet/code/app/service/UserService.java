@@ -8,6 +8,7 @@ import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,10 +17,12 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public UserDTO findById(Long id) {
@@ -35,6 +38,7 @@ public class UserService {
     @Transactional
     public UserDTO createUser(UserCreateDTO userCreateDTO) {
         var user = userMapper.map(userCreateDTO);
+        user.setPassword(passwordEncoder.encode(userCreateDTO.getPassword()));
         return userMapper.map(userRepository.save(user));
     }
 
