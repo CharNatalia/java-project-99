@@ -16,7 +16,7 @@ public class DataInitializer implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         var userData = new UserCreateDTO();
-        userData.setEmail("hexlet@example.com ");
+        userData.setEmail("hexlet@example.com");
         userData.setPassword("qwerty");
         userService.createUser(userData);
     }
