@@ -30,8 +30,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.mapstruct:mapstruct:1.6.3")
     implementation("org.openapitools:jackson-databind-nullable:0.2.11")
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+    implementation("net.datafaker:datafaker:2.7.0")
+
+    implementation("org.springframework.security:spring-security-crypto")
 
     annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
 
@@ -46,7 +47,6 @@ dependencies {
     testImplementation("org.instancio:instancio-junit:5.6.0")
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
     testAnnotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
-    testImplementation("org.springframework.security:spring-security-test")
 }
 
 tasks.withType<Test> {
