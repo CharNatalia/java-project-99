@@ -15,10 +15,9 @@ public abstract class UserMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    public abstract UserDTO map(UserCreateDTO userCreateDTO);
+    public abstract User map(UserCreateDTO userCreateDTO);
 
-    @Mapping(target = "password", ignore = true)
-    public abstract User map(UserDTO userDTO);
+    public abstract UserDTO map(User user);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
