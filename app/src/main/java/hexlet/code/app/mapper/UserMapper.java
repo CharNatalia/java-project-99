@@ -20,9 +20,11 @@ public abstract class UserMapper {
     public abstract UserDTO map(User user);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "lastName", ignore = true)
+    @Mapping(target = "firstName", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    public abstract User update(UserUpdateDTO userUpdateDTO, @MappingTarget User user);
+    public abstract void update(UserUpdateDTO userUpdateDTO, @MappingTarget User user);
 
 
 

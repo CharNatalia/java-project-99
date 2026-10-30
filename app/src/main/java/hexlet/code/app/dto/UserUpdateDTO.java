@@ -8,9 +8,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserUpdateDTO {
-    private String firstName;
-    private String lastName;
-
     @Email(message = "Некорректный email")
     private String email;
 

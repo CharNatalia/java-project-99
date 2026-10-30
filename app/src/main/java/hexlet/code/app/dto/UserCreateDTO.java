@@ -9,13 +9,12 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserCreateDTO {
-    private String firstName;
-    private String lastName;
-
-
     @NotBlank(message = "Email обязателен")
     @Email(message = "Некорректный email")
     private String email;
+
+    private String firstName;
+    private String lastName;
 
     @NotBlank(message = "Пароль обязателен")
     @Size(min = 3)
