@@ -6,6 +6,8 @@ import hexlet.code.app.dto.UserUpdateDTO;
 import hexlet.code.app.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,29 +31,33 @@ public class UsersController {
 
 
     @GetMapping("/{id}")
-    public UserDTO show(@PathVariable Long id) {
-        return userService.findById(id);
+    public ResponseEntity<UserDTO> show(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.findById(id));
     }
 
     @GetMapping
-    public List<UserDTO> index() {
-        return userService.findAll();
+    public ResponseEntity<List<UserDTO>> index() {
+        var users = userService.findAll();
+        return ResponseEntity.ok()
+                .header("X-Total-Count", String.valueOf(users.size()))
+                .body(users);
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public UserDTO create(@Valid @RequestBody UserCreateDTO userCreateDTO) {
-        return userService.createUser(userCreateDTO);
+    public ResponseEntity<UserDTO> create(@Valid @RequestBody UserCreateDTO userCreateDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userCreateDTO));
     }
 
     @PutMapping("/{id}")
-    public UserDTO update(@PathVariable Long id, @Valid @RequestBody UserUpdateDTO userUpdateDTO) {
-        return userService.updateUser(id, userUpdateDTO);
+    @PreAuthorize("@userUtils.isCurrentUser(#id)")
+    public ResponseEntity<UserDTO> update(@PathVariable Long id, @Valid @RequestBody UserUpdateDTO userUpdateDTO) {
+        return ResponseEntity.ok(userService.updateUser(id, userUpdateDTO));
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
+    @PreAuthorize("@userUtils.isCurrentUser(#id)")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 }

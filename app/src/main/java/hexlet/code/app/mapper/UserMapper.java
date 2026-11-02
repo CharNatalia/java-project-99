@@ -17,6 +17,7 @@ import org.mapstruct.ReportingPolicy;
         componentModel = MappingConstants.ComponentModel.SPRING,
         unmappedTargetPolicy = ReportingPolicy.ERROR)
 public abstract class UserMapper {
+    @Mapping(target = "authorities", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
@@ -25,9 +26,8 @@ public abstract class UserMapper {
 
     public abstract UserDTO map(User user);
 
+    @Mapping(target = "authorities", ignore = true)
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "lastName", ignore = true)
-    @Mapping(target = "firstName", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "password", ignore = true)
