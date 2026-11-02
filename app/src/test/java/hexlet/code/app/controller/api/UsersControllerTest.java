@@ -17,9 +17,12 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,11 +30,15 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -58,9 +65,19 @@ public class UsersControllerTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    private JwtRequestPostProcessor token;
+
+    @Autowired private WebApplicationContext wac;
+
     @BeforeEach
     public void setUp() {
         userRepository.deleteAll();
+
+        mockMvc =
+                MockMvcBuilders.webAppContextSetup(wac)
+                        .defaultResponseCharacterEncoding(StandardCharsets.UTF_8)
+                        .apply(springSecurity())
+                        .build();
 
         testUser = Instancio.of(User.class)
                 .ignore(Select.field(User::getId))
@@ -69,6 +86,8 @@ public class UsersControllerTest {
                 .set(Select.field(User::getEmail), faker.internet().emailAddress())
                 .create();
         userRepository.save(testUser);
+
+        token = jwt().jwt(builder -> builder.subject(testUser.getEmail()));
     }
 
     @Test
@@ -80,7 +99,7 @@ public class UsersControllerTest {
                 .set(Select.field(User::getEmail), faker.internet().emailAddress())
                 .create();
         var request =
-                post("/api/users")
+                post("/api/users").with(token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(data));
         mockMvc.perform(request).andExpect(status().isCreated());
@@ -95,7 +114,7 @@ public class UsersControllerTest {
     @Test
     public void testIndex() throws Exception {
         var response =
-                mockMvc.perform(get("/api/users"))
+                mockMvc.perform(get("/api/users").with(token))
                         .andExpect(status().isOk())
                         .andReturn()
                         .getResponse();
@@ -109,7 +128,7 @@ public class UsersControllerTest {
 
     @Test
     public void testShow() throws Exception {
-        var request = get("/api/users/" + testUser.getId());
+        var request = get("/api/users/" + testUser.getId()).with(token);
         var result = mockMvc.perform(request).andExpect(status().isOk()).andReturn();
         var body = result.getResponse().getContentAsString();
         assertThatJson(body)
@@ -126,7 +145,7 @@ public class UsersControllerTest {
         body.put("password", "new-password");
 
         var request =
-                put("/api/users/" + testUser.getId())
+                put("/api/users/" + testUser.getId()).with(token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body));
         mockMvc.perform(request).andExpect(status().isOk());
@@ -142,7 +161,7 @@ public class UsersControllerTest {
 
     @Test
     public void testDelete() throws Exception {
-        mockMvc.perform(delete("/api/users/" + testUser.getId())).andExpect(status().isNoContent());
+        mockMvc.perform(delete("/api/users/" + testUser.getId()).with(token)).andExpect(status().isNoContent());
         var user = userRepository.findById(testUser.getId()).orElse(null);
         assertNull(user);
     }
