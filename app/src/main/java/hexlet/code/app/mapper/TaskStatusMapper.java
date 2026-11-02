@@ -1,9 +1,10 @@
 package hexlet.code.app.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingConstants;
-import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.mapstruct.ReportingPolicy;
+import hexlet.code.app.dto.TaskStatusCreateDTO;
+import hexlet.code.app.dto.TaskStatusDTO;
+import hexlet.code.app.dto.TaskStatusUpdateDTO;
+import hexlet.code.app.model.TaskStatus;
+import org.mapstruct.*;
 
 @Mapper(
         uses = {JsonNullableMapper.class},
@@ -11,4 +12,13 @@ import org.mapstruct.ReportingPolicy;
         componentModel = MappingConstants.ComponentModel.SPRING,
         unmappedTargetPolicy = ReportingPolicy.ERROR)
 public abstract class TaskStatusMapper {
+    public abstract TaskStatusDTO map(TaskStatus taskStatus);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    public abstract TaskStatus map(TaskStatusCreateDTO taskStatusCreateDTO);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    public abstract void update(TaskStatusUpdateDTO dto, @MappingTarget TaskStatus taskStatus);
 }
