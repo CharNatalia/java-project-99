@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -37,8 +38,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -67,7 +66,8 @@ public class UsersControllerTest {
 
     private JwtRequestPostProcessor token;
 
-    @Autowired private WebApplicationContext wac;
+    @Autowired
+    private WebApplicationContext wac;
 
     @BeforeEach
     public void setUp() {
@@ -120,7 +120,8 @@ public class UsersControllerTest {
                         .getResponse();
         var body = response.getContentAsString();
 
-        List<UserDTO> actual = objectMapper.readValue(body, new TypeReference<>() { });
+        List<UserDTO> actual = objectMapper.readValue(body, new TypeReference<>() {
+        });
 
         var expected = userRepository.findAll().stream().map(userMapper::map).toList();
         Assertions.assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
@@ -139,7 +140,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void testUpdate() throws  Exception {
+    public void testUpdate() throws Exception {
         HashMap<String, String> body = new HashMap<>();
         body.put("email", "jack@yahoo.com");
         body.put("password", "new-password");
