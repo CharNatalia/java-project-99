@@ -1,6 +1,8 @@
 package hexlet.code.app.controller.api;
 
+import hexlet.code.app.dto.TaskStatusCreateDTO;
 import hexlet.code.app.dto.TaskStatusDTO;
+import hexlet.code.app.dto.UserCreateDTO;
 import hexlet.code.app.exception.ResourceNotFoundException;
 import hexlet.code.app.mapper.TaskStatusMapper;
 import hexlet.code.app.model.TaskStatus;
@@ -8,7 +10,10 @@ import hexlet.code.app.model.User;
 import hexlet.code.app.repository.TaskStatusRepository;
 import hexlet.code.app.repository.UserRepository;
 import hexlet.code.app.util.ModelGenerator;
+import net.datafaker.Faker;
 import org.assertj.core.api.Assertions;
+import org.instancio.Instancio;
+import org.instancio.Select;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +74,9 @@ public class TaskStatusesControllerTest {
     @Autowired
     private ModelGenerator modelGenerator;
 
+    @Autowired
+    private Faker faker;
+
     @BeforeEach
     public void setUp() {
         taskStatusRepository.deleteAll();
@@ -90,7 +98,10 @@ public class TaskStatusesControllerTest {
 
     @Test
     public void testCreate() throws Exception {
-        var data = modelGenerator.createTaskStatus();
+        var data = Instancio.of(TaskStatusCreateDTO.class)
+                .set(Select.field(TaskStatusCreateDTO::getName), faker.name().title())
+                .set(Select.field(TaskStatusCreateDTO::getSlug), faker.internet().slug())
+                .create();
         var request =
                 post("/api/task_statuses").with(token)
                         .contentType(MediaType.APPLICATION_JSON)

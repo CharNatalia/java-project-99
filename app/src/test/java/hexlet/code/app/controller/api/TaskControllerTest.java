@@ -1,5 +1,6 @@
 package hexlet.code.app.controller.api;
 
+import hexlet.code.app.dto.TaskCreateDTO;
 import hexlet.code.app.dto.TaskDTO;
 import hexlet.code.app.mapper.TaskMapper;
 import hexlet.code.app.model.Task;
@@ -9,7 +10,10 @@ import hexlet.code.app.repository.TaskRepository;
 import hexlet.code.app.repository.TaskStatusRepository;
 import hexlet.code.app.repository.UserRepository;
 import hexlet.code.app.util.ModelGenerator;
+import net.datafaker.Faker;
 import org.assertj.core.api.Assertions;
+import org.instancio.Instancio;
+import org.instancio.Select;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +23,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
@@ -73,6 +78,9 @@ public class TaskControllerTest {
     @Autowired
     private ModelGenerator modelGenerator;
 
+    @Autowired
+    private Faker faker;
+
     @BeforeEach
     public void setUp() {
         taskRepository.deleteAll();
@@ -108,6 +116,7 @@ public class TaskControllerTest {
     }
 
     @Test
+    @Transactional
     public void testIndex() throws Exception {
         var body = mockMvc.perform(get("/api/tasks").with(token))
                 .andExpect(status().isOk())
@@ -124,7 +133,11 @@ public class TaskControllerTest {
 
     @Test
     public void testCreate() throws Exception {
-        var data = modelGenerator.createTask(testTaskStatus);
+        var data = Instancio.of(TaskCreateDTO.class)
+                .ignore(Select.field(TaskCreateDTO::getAssigneeId))
+                .set(Select.field(TaskCreateDTO::getTitle), faker.name().title())
+                .set(Select.field(TaskCreateDTO::getStatus), testTaskStatus.getSlug())
+                .create();
         var request = post("/api/tasks").with(token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(data));
@@ -141,7 +154,7 @@ public class TaskControllerTest {
         var task = taskRepository.findById(id)
                 .orElse(null);
         assertNotNull(task);
-        assertThat(task.getName()).isEqualTo(data.getName());
+        assertThat(task.getName()).isEqualTo(data.getTitle());
     }
 
     @Test

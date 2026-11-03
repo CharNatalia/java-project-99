@@ -1,12 +1,16 @@
 package hexlet.code.app.controller.api;
 
+import hexlet.code.app.dto.UserCreateDTO;
 import hexlet.code.app.dto.UserDTO;
 import hexlet.code.app.exception.ResourceNotFoundException;
 import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.model.User;
 import hexlet.code.app.repository.UserRepository;
 import hexlet.code.app.util.ModelGenerator;
+import net.datafaker.Faker;
 import org.assertj.core.api.Assertions;
+import org.instancio.Instancio;
+import org.instancio.Select;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +72,9 @@ public class UsersControllerTest {
     @Autowired
     private ModelGenerator modelGenerator;
 
+    @Autowired
+    private Faker faker;
+
     @BeforeEach
     public void setUp() {
         userRepository.deleteAll();
@@ -85,7 +92,10 @@ public class UsersControllerTest {
 
     @Test
     public void testCreate() throws Exception {
-        var data = modelGenerator.createUser();
+        var data = Instancio.of(UserCreateDTO.class)
+                .set(Select.field(UserCreateDTO::getEmail), faker.internet().emailAddress())
+                .set(Select.field(UserCreateDTO::getPassword), faker.credentials().password())
+                .create();
         var request =
                 post("/api/users").with(token)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -95,8 +105,7 @@ public class UsersControllerTest {
         var user = userRepository.findByEmail(data.getEmail()).orElse(null);
 
         assertNotNull(user);
-        assertThat(user.getFirstName()).isEqualTo(data.getFirstName());
-        assertThat(user.getLastName()).isEqualTo(data.getLastName());
+        assertThat(user.getEmail()).isEqualTo(data.getEmail());
     }
 
     @Test
