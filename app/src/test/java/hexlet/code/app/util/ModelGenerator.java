@@ -32,12 +32,13 @@ public class ModelGenerator {
                 .create();
     }
 
-    public Task createTask() {
+    public Task createTask(TaskStatus taskStatus) {
         return Instancio.of(Task.class)
                 .ignore(Select.field(Task::getId))
                 .ignore(Select.field(Task::getCreatedAt))
+                .ignore(Select.field(Task::getAssignee))
                 .set(Select.field(Task::getName), faker.name().title())
-                .set(Select.field(Task::getTaskStatus), createTaskStatus())
+                .set(Select.field(Task::getTaskStatus), taskStatus)
                 .create();
     }
 }

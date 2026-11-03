@@ -35,6 +35,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -103,6 +104,7 @@ public class UsersControllerTest {
         var response =
                 mockMvc.perform(get("/api/users").with(token))
                         .andExpect(status().isOk())
+                        .andExpect(header().exists("X-Total-Count"))
                         .andReturn()
                         .getResponse();
         var body = response.getContentAsString();
