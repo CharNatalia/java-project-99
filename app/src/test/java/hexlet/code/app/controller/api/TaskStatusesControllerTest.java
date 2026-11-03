@@ -7,6 +7,7 @@ import hexlet.code.app.model.TaskStatus;
 import hexlet.code.app.model.User;
 import hexlet.code.app.repository.TaskStatusRepository;
 import hexlet.code.app.repository.UserRepository;
+import hexlet.code.app.util.ModelGenerator;
 import net.datafaker.Faker;
 import org.assertj.core.api.Assertions;
 import org.instancio.Instancio;
@@ -70,6 +71,9 @@ public class TaskStatusesControllerTest {
     @Autowired
     private WebApplicationContext wac;
 
+    @Autowired
+    private ModelGenerator modelGenerator;
+
     @BeforeEach
     public void setUp() {
         taskStatusRepository.deleteAll();
@@ -81,21 +85,11 @@ public class TaskStatusesControllerTest {
                         .apply(springSecurity())
                         .build();
 
-        testUser = Instancio.of(User.class)
-                .ignore(Select.field(User::getId))
-                .ignore(Select.field(User::getCreatedAt))
-                .ignore(Select.field(User::getUpdatedAt))
-                .set(Select.field(User::getEmail), faker.internet().emailAddress())
-                .create();
+        testUser = modelGenerator.createUser();
         userRepository.save(testUser);
         token = jwt().jwt(builder -> builder.subject(testUser.getEmail()));
 
-        testTaskStatus = Instancio.of(TaskStatus.class)
-                .ignore(Select.field(TaskStatus::getId))
-                .ignore(Select.field(TaskStatus::getCreatedAt))
-                .set(Select.field(TaskStatus::getSlug), faker.internet().slug())
-                .set(Select.field(TaskStatus::getName), faker.name().title())
-                .create();
+        testTaskStatus = modelGenerator.createTaskStatus();
         taskStatusRepository.save(testTaskStatus);
     }
 

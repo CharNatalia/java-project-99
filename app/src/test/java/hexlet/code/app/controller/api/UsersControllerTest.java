@@ -5,6 +5,7 @@ import hexlet.code.app.exception.ResourceNotFoundException;
 import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.model.User;
 import hexlet.code.app.repository.UserRepository;
+import hexlet.code.app.util.ModelGenerator;
 import net.datafaker.Faker;
 import org.assertj.core.api.Assertions;
 import org.instancio.Instancio;
@@ -69,6 +70,9 @@ public class UsersControllerTest {
     @Autowired
     private WebApplicationContext wac;
 
+    @Autowired
+    private ModelGenerator modelGenerator;
+
     @BeforeEach
     public void setUp() {
         userRepository.deleteAll();
@@ -79,14 +83,8 @@ public class UsersControllerTest {
                         .apply(springSecurity())
                         .build();
 
-        testUser = Instancio.of(User.class)
-                .ignore(Select.field(User::getId))
-                .ignore(Select.field(User::getCreatedAt))
-                .ignore(Select.field(User::getUpdatedAt))
-                .set(Select.field(User::getEmail), faker.internet().emailAddress())
-                .create();
+        testUser = modelGenerator.createUser();
         userRepository.save(testUser);
-
         token = jwt().jwt(builder -> builder.subject(testUser.getEmail()));
     }
 
