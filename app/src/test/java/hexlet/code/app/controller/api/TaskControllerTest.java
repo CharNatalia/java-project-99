@@ -111,8 +111,7 @@ public class TaskControllerTest {
         assertThatJson(body)
                 .and(
                         v -> v.node("title").isEqualTo(testTask.getName()),
-                        v -> v.node("status").isEqualTo(testTaskStatus.getSlug())
-                );
+                        v -> v.node("status").isEqualTo(testTaskStatus.getSlug()));
     }
 
     @Test

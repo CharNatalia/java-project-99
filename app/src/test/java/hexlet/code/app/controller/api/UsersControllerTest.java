@@ -5,6 +5,7 @@ import hexlet.code.app.dto.UserDTO;
 import hexlet.code.app.exception.ResourceNotFoundException;
 import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.model.User;
+import hexlet.code.app.repository.TaskRepository;
 import hexlet.code.app.repository.UserRepository;
 import hexlet.code.app.util.ModelGenerator;
 import net.datafaker.Faker;
@@ -75,8 +76,12 @@ public class UsersControllerTest {
     @Autowired
     private Faker faker;
 
+    @Autowired
+    private TaskRepository taskRepository;
+
     @BeforeEach
     public void setUp() {
+        taskRepository.deleteAll();
         userRepository.deleteAll();
 
         mockMvc =

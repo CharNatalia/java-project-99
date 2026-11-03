@@ -1,5 +1,6 @@
 package hexlet.code.app.handler;
 
+import hexlet.code.app.exception.ResourceInUseException;
 import hexlet.code.app.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,5 +38,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleAccessDenied(AccessDeniedException exception) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body("Нет прав на выполнение операции");
+    }
+
+    @ExceptionHandler(ResourceInUseException.class)
+    public ResponseEntity<String> handleResourceInUse(ResourceInUseException exception) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
     }
 }

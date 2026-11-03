@@ -3,8 +3,10 @@ package hexlet.code.app.service;
 import hexlet.code.app.dto.TaskStatusCreateDTO;
 import hexlet.code.app.dto.TaskStatusDTO;
 import hexlet.code.app.dto.TaskStatusUpdateDTO;
+import hexlet.code.app.exception.ResourceInUseException;
 import hexlet.code.app.exception.ResourceNotFoundException;
 import hexlet.code.app.mapper.TaskStatusMapper;
+import hexlet.code.app.repository.TaskRepository;
 import hexlet.code.app.repository.TaskStatusRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -18,6 +20,8 @@ import java.util.List;
 public class TaskStatusService {
     private final TaskStatusRepository taskStatusRepository;
     private final TaskStatusMapper taskStatusMapper;
+
+    private final TaskRepository taskRepository;
 
     public TaskStatusDTO findById(Long id) {
         var taskStatus = taskStatusRepository.findById(id)
@@ -45,6 +49,11 @@ public class TaskStatusService {
 
     @Transactional
     public void deleteStatus(Long id) {
+        var status = taskStatusRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Статус не найден"));
+        if (taskRepository.existsByTaskStatusId(status.getId())) {
+            throw new ResourceInUseException("Нельзя удалить статус, который используется в задаче");
+        }
         taskStatusRepository.deleteById(id);
     }
 }

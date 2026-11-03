@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
+    boolean existsByAssigneeId(Long id);
+    boolean existsByTaskStatusId(Long id);
 }

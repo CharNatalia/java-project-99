@@ -2,11 +2,11 @@ package hexlet.code.app.controller.api;
 
 import hexlet.code.app.dto.TaskStatusCreateDTO;
 import hexlet.code.app.dto.TaskStatusDTO;
-import hexlet.code.app.dto.UserCreateDTO;
 import hexlet.code.app.exception.ResourceNotFoundException;
 import hexlet.code.app.mapper.TaskStatusMapper;
 import hexlet.code.app.model.TaskStatus;
 import hexlet.code.app.model.User;
+import hexlet.code.app.repository.TaskRepository;
 import hexlet.code.app.repository.TaskStatusRepository;
 import hexlet.code.app.repository.UserRepository;
 import hexlet.code.app.util.ModelGenerator;
@@ -77,8 +77,12 @@ public class TaskStatusesControllerTest {
     @Autowired
     private Faker faker;
 
+    @Autowired
+    private TaskRepository taskRepository;
+
     @BeforeEach
     public void setUp() {
+        taskRepository.deleteAll();
         taskStatusRepository.deleteAll();
         userRepository.deleteAll();
 
