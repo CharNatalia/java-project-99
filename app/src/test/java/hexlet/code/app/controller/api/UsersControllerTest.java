@@ -6,10 +6,7 @@ import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.model.User;
 import hexlet.code.app.repository.UserRepository;
 import hexlet.code.app.util.ModelGenerator;
-import net.datafaker.Faker;
 import org.assertj.core.api.Assertions;
-import org.instancio.Instancio;
-import org.instancio.Select;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,9 +51,6 @@ public class UsersControllerTest {
     private User testUser;
 
     @Autowired
-    private Faker faker;
-
-    @Autowired
     private ObjectMapper objectMapper;
 
     @Autowired
@@ -90,12 +84,7 @@ public class UsersControllerTest {
 
     @Test
     public void testCreate() throws Exception {
-        var data = Instancio.of(User.class)
-                .ignore(Select.field(User::getId))
-                .ignore(Select.field(User::getCreatedAt))
-                .ignore(Select.field(User::getUpdatedAt))
-                .set(Select.field(User::getEmail), faker.internet().emailAddress())
-                .create();
+        var data = modelGenerator.createUser();
         var request =
                 post("/api/users").with(token)
                         .contentType(MediaType.APPLICATION_JSON)

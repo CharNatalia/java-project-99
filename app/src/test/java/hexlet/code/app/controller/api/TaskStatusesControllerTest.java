@@ -8,10 +8,7 @@ import hexlet.code.app.model.User;
 import hexlet.code.app.repository.TaskStatusRepository;
 import hexlet.code.app.repository.UserRepository;
 import hexlet.code.app.util.ModelGenerator;
-import net.datafaker.Faker;
 import org.assertj.core.api.Assertions;
-import org.instancio.Instancio;
-import org.instancio.Select;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,9 +50,6 @@ public class TaskStatusesControllerTest {
     private TaskStatus testTaskStatus;
 
     @Autowired
-    private Faker faker;
-
-    @Autowired
     private ObjectMapper objectMapper;
 
     @Autowired
@@ -95,12 +89,7 @@ public class TaskStatusesControllerTest {
 
     @Test
     public void testCreate() throws Exception {
-        var data = Instancio.of(TaskStatus.class)
-                .ignore(Select.field(TaskStatus::getId))
-                .ignore(Select.field(TaskStatus::getCreatedAt))
-                .set(Select.field(TaskStatus::getSlug), faker.internet().slug())
-                .set(Select.field(TaskStatus::getName), faker.name().title())
-                .create();
+        var data = modelGenerator.createTaskStatus();
         var request =
                 post("/api/task_statuses").with(token)
                         .contentType(MediaType.APPLICATION_JSON)
