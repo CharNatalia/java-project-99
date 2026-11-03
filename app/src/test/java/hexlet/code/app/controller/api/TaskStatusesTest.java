@@ -1,10 +1,8 @@
 package hexlet.code.app.controller.api;
 
 import hexlet.code.app.dto.TaskStatusDTO;
-import hexlet.code.app.dto.UserDTO;
 import hexlet.code.app.exception.ResourceNotFoundException;
 import hexlet.code.app.mapper.TaskStatusMapper;
-import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.model.TaskStatus;
 import hexlet.code.app.model.User;
 import hexlet.code.app.repository.TaskStatusRepository;
@@ -19,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -37,8 +34,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -68,7 +67,8 @@ public class TaskStatusesTest {
 
     private SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor token;
 
-    @Autowired private WebApplicationContext wac;
+    @Autowired
+    private WebApplicationContext wac;
 
     @BeforeEach
     public void setUp() {
@@ -129,7 +129,8 @@ public class TaskStatusesTest {
                         .getResponse();
         var body = response.getContentAsString();
 
-        List<TaskStatusDTO> actual = objectMapper.readValue(body, new TypeReference<>() { });
+        List<TaskStatusDTO> actual = objectMapper.readValue(body, new TypeReference<>() {
+        });
 
         var expected = taskStatusRepository.findAll().stream().map(taskStatusMapper::map).toList();
         Assertions.assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
@@ -147,7 +148,7 @@ public class TaskStatusesTest {
     }
 
     @Test
-    public void testUpdate() throws  Exception {
+    public void testUpdate() throws Exception {
         HashMap<String, String> body = new HashMap<>();
         body.put("name", "newStatus");
 
@@ -164,7 +165,9 @@ public class TaskStatusesTest {
 
     @Test
     public void testDelete() throws Exception {
-        mockMvc.perform(delete("/api/task_statuses/" + testTaskStatus.getId()).with(token)).andExpect(status().isNoContent());
+        mockMvc.perform(delete("/api/task_statuses/" + testTaskStatus.getId()).with(token))
+                .andExpect(status()
+                        .isNoContent());
         var taskStatus = taskStatusRepository.findById(testTaskStatus.getId()).orElse(null);
         assertNull(taskStatus);
     }
