@@ -17,6 +17,7 @@ import org.mapstruct.ReportingPolicy;
         componentModel = MappingConstants.ComponentModel.SPRING,
         unmappedTargetPolicy = ReportingPolicy.ERROR)
 public abstract class TaskMapper {
+    @Mapping(target = "labels", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "name", source = "title")
@@ -31,6 +32,7 @@ public abstract class TaskMapper {
     @Mapping(target = "assigneeId", source = "assignee.id")
     public abstract TaskDTO map(Task task);
 
+    @Mapping(target = "labels", ignore = true)
     @Mapping(target = "taskStatus", ignore = true)
     @Mapping(target = "name", source = "title")
     @Mapping(target = "id", ignore = true)
