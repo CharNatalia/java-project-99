@@ -6,6 +6,7 @@ import hexlet.code.app.exception.ResourceNotFoundException;
 import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.model.User;
 import hexlet.code.app.repository.TaskRepository;
+import hexlet.code.app.repository.TaskStatusRepository;
 import hexlet.code.app.repository.UserRepository;
 import hexlet.code.app.util.ModelGenerator;
 import net.datafaker.Faker;
@@ -79,9 +80,14 @@ public class UsersControllerTest {
     @Autowired
     private TaskRepository taskRepository;
 
+    @Autowired
+    private TaskStatusRepository statusRepository;
+
+
     @BeforeEach
     public void setUp() {
         taskRepository.deleteAll();
+        statusRepository.deleteAll();
         userRepository.deleteAll();
 
         mockMvc =
@@ -168,6 +174,24 @@ public class UsersControllerTest {
         mockMvc.perform(delete("/api/users/" + testUser.getId()).with(token)).andExpect(status().isNoContent());
         var user = userRepository.findById(testUser.getId()).orElse(null);
         assertNull(user);
+    }
+
+    @Test
+    public void testDeleteExceptions() throws Exception {
+        var task = modelGenerator.createTask();
+        var status = modelGenerator.createTaskStatus();
+        statusRepository.save(status);
+        task.setTaskStatus(status);
+        task.setAssignee(testUser);
+        taskRepository.save(task);
+        mockMvc.perform(delete("/api/users/" + testUser.getId()).with(token))
+                .andExpect(status().isConflict());
+
+        var newUser = modelGenerator.createUser();
+        userRepository.save(newUser);
+        mockMvc.perform(delete("/api/users/" + newUser.getId()).with(token))
+                .andExpect(status().isForbidden());
+
     }
 
 }

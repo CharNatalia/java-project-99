@@ -31,13 +31,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<String> handleAuthentication() {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Не верный логин или пароль");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<String> handleAccessDenied(AccessDeniedException exception) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body("Нет прав на выполнение операции");
+                .body("You do not have permission to perform this operation");
     }
 
     @ExceptionHandler(ResourceInUseException.class)

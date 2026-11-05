@@ -58,7 +58,7 @@ public class UserService {
         var user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User with id = " + id + " not found"));
         if (taskRepository.existsByAssigneeId(user.getId())) {
-            throw new ResourceInUseException("Нельзя удалить пользователя, назначенного исполнителем задачи");
+            throw new ResourceInUseException("Cannot delete user: user has assigned tasks");
         }
         userRepository.deleteById(id);
     }

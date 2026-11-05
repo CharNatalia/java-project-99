@@ -24,6 +24,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
@@ -44,6 +45,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -192,6 +194,54 @@ public class TaskControllerTest {
                 .orElse(null);
         assertNotNull(task);
         assertThat(task.getName()).isEqualTo(data.getTitle());
+    }
+
+    @Test
+    public void testCreateExceptions() throws Exception {
+        var data = Instancio.of(TaskCreateDTO.class)
+                .ignore(Select.field(TaskCreateDTO::getAssigneeId))
+                .ignore(Select.field(TaskCreateDTO::getTaskLabelIds))
+                .ignore(Select.field(TaskCreateDTO::getStatus))
+                .set(Select.field(TaskCreateDTO::getTitle), faker.name().title())
+                .create();
+
+        var request = post("/api/tasks").with(token)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        data.setStatus("Wrong status");
+        assertNotFound(request, data, "Status not found");
+
+        data.setStatus(testTaskStatus.getSlug());
+        data.setAssigneeId(9999L);
+        assertNotFound(request, data, "User not found");
+
+        data.setAssigneeId(null);
+        data.setTaskLabelIds(List.of(99999L));
+        assertNotFound(request, data, "Label not found");
+    }
+
+    @Test
+    public void testUpdateExceptions() throws Exception {
+        var request = put("/api/tasks/" + testTask.getId()).with(token)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("status", "Wrong status");
+        assertNotFound(request, data, "Status not found");
+
+        data.clear();
+        data.put("assignee_id", 9999L);
+        assertNotFound(request, data, "User not found");
+
+        data.clear();
+        data.put("taskLabelIds", List.of(9999L));
+        assertNotFound(request, data, "Label not found");
+    }
+
+    private void assertNotFound(MockHttpServletRequestBuilder request, Object data, String message) throws Exception {
+        mockMvc.perform(request.content(objectMapper.writeValueAsString(data)))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(message));
     }
 
     @Test
