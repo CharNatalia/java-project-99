@@ -25,7 +25,7 @@ public class TaskSpecification {
         return (root, query, criteriaBuilder) ->
                 assigneeId == null
                         ? criteriaBuilder.conjunction()
-                        :criteriaBuilder.equal(root.get("assignee").get("id"), assigneeId);
+                        : criteriaBuilder.equal(root.get("assignee").get("id"), assigneeId);
     }
 
     private Specification<Task> withStatus(String status) {
