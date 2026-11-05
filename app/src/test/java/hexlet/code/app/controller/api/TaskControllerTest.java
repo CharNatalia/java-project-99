@@ -3,9 +3,11 @@ package hexlet.code.app.controller.api;
 import hexlet.code.app.dto.TaskCreateDTO;
 import hexlet.code.app.dto.TaskDTO;
 import hexlet.code.app.mapper.TaskMapper;
+import hexlet.code.app.model.Label;
 import hexlet.code.app.model.Task;
 import hexlet.code.app.model.TaskStatus;
 import hexlet.code.app.model.User;
+import hexlet.code.app.repository.LabelRepository;
 import hexlet.code.app.repository.TaskRepository;
 import hexlet.code.app.repository.TaskStatusRepository;
 import hexlet.code.app.repository.UserRepository;
@@ -60,6 +62,7 @@ public class TaskControllerTest {
     private TaskStatus testTaskStatus;
     private Task testTask;
     private User testUser;
+    private Label testLabel;
 
     @Autowired
     private TaskMapper taskMapper;
@@ -81,6 +84,9 @@ public class TaskControllerTest {
     @Autowired
     private Faker faker;
 
+    @Autowired
+    private LabelRepository labelRepository;
+
     @BeforeEach
     public void setUp() {
         taskRepository.deleteAll();
@@ -99,7 +105,14 @@ public class TaskControllerTest {
         testTaskStatus = modelGenerator.createTaskStatus();
         taskStatusRepository.save(testTaskStatus);
 
-        testTask = modelGenerator.createTask(testTaskStatus);
+        testLabel = modelGenerator.createLabel();
+        labelRepository.save(testLabel);
+
+
+        testTask = modelGenerator.createTask();
+        testTask.setAssignee(testUser);
+        testTask.setTaskStatus(testTaskStatus);
+        testTask.addLabel(testLabel);
         taskRepository.save(testTask);
     }
 
@@ -116,6 +129,31 @@ public class TaskControllerTest {
 
     @Test
     @Transactional
+    public void testIndexWithParams() throws Exception {
+        for (var i = 0; i < 5; i++) {
+            var task = modelGenerator.createTask();
+            task.setTaskStatus(testTaskStatus);
+            taskRepository.save(task);
+        }
+
+        var body = mockMvc.perform(get("/api/tasks")
+                        .param("titleCont", testTask.getName())
+                        .param("assigneeId", testTask.getAssignee().getId().toString())
+                        .param("status", testTask.getTaskStatus().getSlug())
+                        .param("labelId", testLabel.getId().toString())
+                        .with(token))
+                .andExpect(status().isOk())
+                .andExpect(header().string("X-Total-Count", "1"))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        List<TaskDTO> actual = objectMapper.readValue(body, new TypeReference<>() {
+        });
+        Assertions.assertThat(actual).containsExactly(taskMapper.map(testTask));
+    }
+
+    @Test
+    @Transactional
     public void testIndex() throws Exception {
         var body = mockMvc.perform(get("/api/tasks").with(token))
                 .andExpect(status().isOk())
@@ -123,7 +161,6 @@ public class TaskControllerTest {
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
-
         List<TaskDTO> actual = objectMapper.readValue(body, new TypeReference<>() {
         });
         var expected = taskRepository.findAll().stream().map(taskMapper::map).toList();

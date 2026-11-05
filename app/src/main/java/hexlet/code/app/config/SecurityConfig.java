@@ -37,6 +37,12 @@ public class SecurityConfig {
                                         // Разрешаем доступ только к /api/login, чтобы
                                         // аутентифицироваться и получить токен
                                         .requestMatchers(
+                                                "/swagger-ui.html",
+                                                "/swagger-ui/**",
+                                                "/v3/api-docs",
+                                                "/v3/api-docs/**")
+                                        .permitAll()
+                                        .requestMatchers(
                                                 "/",
                                                 "/index.html",
                                                 "/assets/**",

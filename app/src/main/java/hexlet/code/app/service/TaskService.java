@@ -2,6 +2,7 @@ package hexlet.code.app.service;
 
 import hexlet.code.app.dto.TaskCreateDTO;
 import hexlet.code.app.dto.TaskDTO;
+import hexlet.code.app.dto.TaskParamsDTO;
 import hexlet.code.app.dto.TaskUpdateDTO;
 import hexlet.code.app.exception.ResourceNotFoundException;
 import hexlet.code.app.mapper.TaskMapper;
@@ -9,6 +10,7 @@ import hexlet.code.app.repository.LabelRepository;
 import hexlet.code.app.repository.TaskRepository;
 import hexlet.code.app.repository.TaskStatusRepository;
 import hexlet.code.app.repository.UserRepository;
+import hexlet.code.app.specification.TaskSpecification;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,8 @@ public class TaskService {
 
     private final TaskMapper taskMapper;
 
+    private TaskSpecification specBuilder;
+
 
     public TaskDTO findById(Long id) {
         var task = taskRepository.findById(id)
@@ -32,8 +36,9 @@ public class TaskService {
         return taskMapper.map(task);
     }
 
-    public List<TaskDTO> findAll() {
-        return taskRepository.findAll().stream().map(taskMapper::map).toList();
+    public List<TaskDTO> findAll(TaskParamsDTO params) {
+        var spec = specBuilder.build(params);
+        return taskRepository.findAll(spec).stream().map(taskMapper::map).toList();
     }
 
     @Transactional
