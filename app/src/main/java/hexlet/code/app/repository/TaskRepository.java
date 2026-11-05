@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface TaskRepository extends JpaRepository<Task, Long> {
     boolean existsByAssigneeId(Long id);
     boolean existsByTaskStatusId(Long id);
-    boolean existsByLabelId(Long id);
+    boolean existsByLabelsId(Long id);
 }
