@@ -134,6 +134,7 @@ public class TaskControllerTest {
     public void testCreate() throws Exception {
         var data = Instancio.of(TaskCreateDTO.class)
                 .ignore(Select.field(TaskCreateDTO::getAssigneeId))
+                .ignore(Select.field(TaskCreateDTO::getTaskLabelIds))
                 .set(Select.field(TaskCreateDTO::getTitle), faker.name().title())
                 .set(Select.field(TaskCreateDTO::getStatus), testTaskStatus.getSlug())
                 .create();

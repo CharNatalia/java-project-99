@@ -12,7 +12,6 @@ import hexlet.code.app.repository.TaskRepository;
 import hexlet.code.app.repository.TaskStatusRepository;
 import hexlet.code.app.repository.UserRepository;
 import hexlet.code.app.util.ModelGenerator;
-import jakarta.transaction.Transactional;
 import net.datafaker.Faker;
 import org.assertj.core.api.Assertions;
 import org.instancio.Instancio;
@@ -49,7 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class labelControllerTest {
+public class LabelControllerTest {
     @Autowired
     private TaskRepository taskRepository;
     @Autowired

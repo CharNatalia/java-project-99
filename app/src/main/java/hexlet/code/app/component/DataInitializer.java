@@ -1,9 +1,12 @@
 package hexlet.code.app.component;
 
+import hexlet.code.app.dto.LabelCreateDTO;
 import hexlet.code.app.dto.TaskStatusCreateDTO;
 import hexlet.code.app.dto.UserCreateDTO;
+import hexlet.code.app.repository.LabelRepository;
 import hexlet.code.app.repository.TaskStatusRepository;
 import hexlet.code.app.repository.UserRepository;
+import hexlet.code.app.service.LabelService;
 import hexlet.code.app.service.TaskStatusService;
 import hexlet.code.app.service.UserService;
 import lombok.AllArgsConstructor;
@@ -19,6 +22,8 @@ public class DataInitializer implements ApplicationRunner {
     private final UserRepository userRepository;
     private final TaskStatusService taskStatusService;
     private final TaskStatusRepository taskStatusRepository;
+    private final LabelRepository labelRepository;
+    private final LabelService labelService;
 
     @Override
     public void run(ApplicationArguments args) {
@@ -34,6 +39,9 @@ public class DataInitializer implements ApplicationRunner {
         createDefaultStatus("To be fixed", "to_be_fixed");
         createDefaultStatus("To publish", "to_publish");
         createDefaultStatus("Published", "published");
+
+        createDefaultLabel("feature");
+        createDefaultLabel("bug");
     }
 
     private void createDefaultStatus(String name, String slug) {
@@ -42,6 +50,14 @@ public class DataInitializer implements ApplicationRunner {
             taskStatus.setName(name);
             taskStatus.setSlug(slug);
             taskStatusService.createStatus(taskStatus);
+        }
+    }
+
+    private void createDefaultLabel(String name) {
+        if (labelRepository.findByName(name).isEmpty()) {
+            var label = new LabelCreateDTO();
+            label.setName(name);
+            labelService.createLabel(label);
         }
     }
 }

@@ -3,6 +3,7 @@ package hexlet.code.app.mapper;
 import hexlet.code.app.dto.TaskCreateDTO;
 import hexlet.code.app.dto.TaskDTO;
 import hexlet.code.app.dto.TaskUpdateDTO;
+import hexlet.code.app.model.Label;
 import hexlet.code.app.model.Task;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -26,6 +27,7 @@ public abstract class TaskMapper {
     @Mapping(target = "assignee", ignore = true)
     public abstract Task map(TaskCreateDTO dto);
 
+    @Mapping(target = "taskLabelIds", source = "labels")
     @Mapping(target = "title", source = "name")
     @Mapping(target = "status", source = "taskStatus.slug")
     @Mapping(target = "content", source = "description")
@@ -40,4 +42,8 @@ public abstract class TaskMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "assignee", ignore = true)
     public abstract void update(TaskUpdateDTO taskUpdateDTO, @MappingTarget Task task);
+
+    protected Long map(Label label) {
+        return label.getId();
+    }
 }
