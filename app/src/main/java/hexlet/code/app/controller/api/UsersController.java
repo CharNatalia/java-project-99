@@ -33,9 +33,6 @@ public class UsersController {
 
     @GetMapping
     public ResponseEntity<List<UserDTO>> index() {
-        io.sentry.Sentry.captureException(
-                new RuntimeException("Тестовая ошибка для Bugsink")
-        );
         var users = userService.findAll();
         return ResponseEntity.ok()
                 .header("X-Total-Count", String.valueOf(users.size()))
