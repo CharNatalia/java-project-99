@@ -33,6 +33,8 @@ dependencies {
     implementation("net.datafaker:datafaker:2.7.0")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+    implementation("io.sentry:sentry-spring-boot-4-starter:8.61.1")
+
 
     annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
 
