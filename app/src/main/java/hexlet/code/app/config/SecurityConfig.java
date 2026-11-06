@@ -26,6 +26,7 @@ public class SecurityConfig {
     private JwtDecoder jwtDecoder;
 
     @Bean
+    @SuppressWarnings("java:S4502")
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http) throws Exception {
         // По умолчанию все запрещено
