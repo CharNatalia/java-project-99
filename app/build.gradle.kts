@@ -34,6 +34,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     implementation("io.sentry:sentry-spring-boot-4-starter:8.61.1")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.2.0")
 
 
     annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
