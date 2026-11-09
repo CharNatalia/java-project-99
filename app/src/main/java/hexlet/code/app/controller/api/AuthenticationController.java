@@ -2,6 +2,7 @@ package hexlet.code.app.controller.api;
 
 import hexlet.code.app.dto.AuthRequest;
 import hexlet.code.app.utils.JWTUtils;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,7 +20,7 @@ public class AuthenticationController {
     private AuthenticationManager authenticationManager;
 
     @PostMapping("/login")
-    public String create(@RequestBody AuthRequest authRequest) {
+    public String create(@Valid @RequestBody AuthRequest authRequest) {
         var authentication =
                 new UsernamePasswordAuthenticationToken(
                         authRequest.getUsername(), authRequest.getPassword());
