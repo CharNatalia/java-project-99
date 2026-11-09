@@ -1,5 +1,6 @@
 package hexlet.code.app.handler;
 
+import hexlet.code.app.exception.ResourceAlreadyExistsException;
 import hexlet.code.app.exception.ResourceInUseException;
 import hexlet.code.app.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -42,6 +43,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceInUseException.class)
     public ResponseEntity<String> handleResourceInUse(ResourceInUseException exception) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
+    }
+
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    public ResponseEntity<String> handleResourceAlreadyExists(ResourceAlreadyExistsException exception) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
     }
 }

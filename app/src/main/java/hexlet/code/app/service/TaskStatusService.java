@@ -3,6 +3,7 @@ package hexlet.code.app.service;
 import hexlet.code.app.dto.TaskStatusCreateDTO;
 import hexlet.code.app.dto.TaskStatusDTO;
 import hexlet.code.app.dto.TaskStatusUpdateDTO;
+import hexlet.code.app.exception.ResourceAlreadyExistsException;
 import hexlet.code.app.exception.ResourceInUseException;
 import hexlet.code.app.exception.ResourceNotFoundException;
 import hexlet.code.app.mapper.TaskStatusMapper;
@@ -14,6 +15,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -35,6 +37,9 @@ public class TaskStatusService {
 
     @Transactional
     public TaskStatusDTO createStatus(TaskStatusCreateDTO dto) {
+        if (dto.getSlug() != null && taskStatusRepository.findBySlug(dto.getSlug()).isPresent()) {
+            throw new ResourceAlreadyExistsException("Slug already exists");
+        }
         var taskStatus = taskStatusMapper.map(dto);
         return taskStatusMapper.map(taskStatusRepository.save(taskStatus));
     }
@@ -43,6 +48,14 @@ public class TaskStatusService {
     public TaskStatusDTO updateStatus(Long id, @Valid TaskStatusUpdateDTO dto) {
         var taskStatus = taskStatusRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Статус не найден"));
+
+        if (dto.getSlug() != null) {
+            taskStatusRepository.findBySlug(dto.getSlug())
+                    .filter(status -> !Objects.equals(status.getId(), taskStatus.getId()))
+                    .ifPresent(status -> {
+                        throw new ResourceAlreadyExistsException("Slug already exists");
+                    });
+        }
         taskStatusMapper.update(dto, taskStatus);
         return taskStatusMapper.map(taskStatusRepository.save(taskStatus));
     }
