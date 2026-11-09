@@ -20,9 +20,9 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
@@ -60,13 +60,11 @@ public class Task {
     @JoinTable(name = "tasks_label",
             joinColumns = @JoinColumn(name = "task_id"),
             inverseJoinColumns = @JoinColumn(name = "label_id"))
-    private List<Label> labels = new ArrayList<>();
+    private Set<Label> labels = new HashSet<>();
 
     public void addLabel(Label label) {
-        if (!labels.contains(label)) {
-            labels.add(label);
-            label.getTasks().add(this);
-        }
+        labels.add(label);
+        label.getTasks().add(this);
     }
 
     public void removeLabel(Label label) {
