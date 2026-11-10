@@ -3,7 +3,6 @@ package hexlet.code.app.service;
 import hexlet.code.app.dto.LabelCreateDTO;
 import hexlet.code.app.dto.LabelDTO;
 import hexlet.code.app.dto.LabelUpdateDTO;
-import hexlet.code.app.exception.ResourceInUseException;
 import hexlet.code.app.exception.ResourceNotFoundException;
 import hexlet.code.app.mapper.LabelMapper;
 import hexlet.code.app.repository.LabelRepository;
@@ -55,9 +54,6 @@ public class LabelServiceImpl implements LabelService {
     @Transactional
     @Override
     public void deleteLabel(Long id) {
-        if (taskRepository.existsByLabelsId(id)) {
-            throw new ResourceInUseException("Label in use");
-        }
         labelRepository.deleteById(id);
     }
 }

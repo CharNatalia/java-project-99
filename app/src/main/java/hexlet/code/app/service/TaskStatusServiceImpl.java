@@ -3,8 +3,6 @@ package hexlet.code.app.service;
 import hexlet.code.app.dto.TaskStatusCreateDTO;
 import hexlet.code.app.dto.TaskStatusDTO;
 import hexlet.code.app.dto.TaskStatusUpdateDTO;
-import hexlet.code.app.exception.ResourceAlreadyExistsException;
-import hexlet.code.app.exception.ResourceInUseException;
 import hexlet.code.app.exception.ResourceNotFoundException;
 import hexlet.code.app.mapper.TaskStatusMapper;
 import hexlet.code.app.repository.TaskRepository;
@@ -15,7 +13,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -28,7 +25,7 @@ public class TaskStatusServiceImpl implements TaskStatusService {
     @Override
     public TaskStatusDTO findById(Long id) {
         var taskStatus = taskStatusRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Статус не найден"));
+                .orElseThrow(() -> new ResourceNotFoundException("Status not found"));
         return taskStatusMapper.map(taskStatus);
     }
 
@@ -40,9 +37,6 @@ public class TaskStatusServiceImpl implements TaskStatusService {
     @Transactional
     @Override
     public TaskStatusDTO createStatus(TaskStatusCreateDTO dto) {
-        if (dto.getSlug() != null && taskStatusRepository.findBySlug(dto.getSlug()).isPresent()) {
-            throw new ResourceAlreadyExistsException("Slug already exists");
-        }
         var taskStatus = taskStatusMapper.map(dto);
         return taskStatusMapper.map(taskStatusRepository.save(taskStatus));
     }
@@ -51,15 +45,7 @@ public class TaskStatusServiceImpl implements TaskStatusService {
     @Override
     public TaskStatusDTO updateStatus(Long id, @Valid TaskStatusUpdateDTO dto) {
         var taskStatus = taskStatusRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Статус не найден"));
-
-        if (dto.getSlug() != null) {
-            taskStatusRepository.findBySlug(dto.getSlug())
-                    .filter(status -> !Objects.equals(status.getId(), taskStatus.getId()))
-                    .ifPresent(status -> {
-                        throw new ResourceAlreadyExistsException("Slug already exists");
-                    });
-        }
+                .orElseThrow(() -> new ResourceNotFoundException("Status not found"));
         taskStatusMapper.update(dto, taskStatus);
         return taskStatusMapper.map(taskStatusRepository.save(taskStatus));
     }
@@ -67,11 +53,8 @@ public class TaskStatusServiceImpl implements TaskStatusService {
     @Transactional
     @Override
     public void deleteStatus(Long id) {
-        var status = taskStatusRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Статус не найден"));
-        if (taskRepository.existsByTaskStatusId(status.getId())) {
-            throw new ResourceInUseException("Нельзя удалить статус, который используется в задаче");
-        }
+        taskStatusRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Status not found"));
         taskStatusRepository.deleteById(id);
     }
 }

@@ -2,6 +2,7 @@ package hexlet.code.app.controller.api;
 
 import hexlet.code.app.dto.TaskStatusCreateDTO;
 import hexlet.code.app.dto.TaskStatusDTO;
+import hexlet.code.app.dto.TaskStatusUpdateDTO;
 import hexlet.code.app.exception.ResourceNotFoundException;
 import hexlet.code.app.mapper.TaskStatusMapper;
 import hexlet.code.app.model.TaskStatus;
@@ -170,5 +171,48 @@ public class TaskStatusesControllerTest {
                         .isNoContent());
         var taskStatus = taskStatusRepository.findById(testTaskStatus.getId()).orElse(null);
         assertNull(taskStatus);
+    }
+
+    @Test
+    public void testCreateNotUnique() throws Exception {
+        var data = Instancio.of(TaskStatusCreateDTO.class)
+                .set(Select.field(TaskStatusCreateDTO::getName), testTaskStatus.getName())
+                .set(Select.field(TaskStatusCreateDTO::getSlug), faker.internet().slug())
+                .create();
+        var request =
+                post("/api/task_statuses").with(token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(data));
+        mockMvc.perform(request).andExpect(status().isConflict());
+
+        data.setName(faker.name().title());
+        data.setSlug(testTaskStatus.getSlug());
+        request =
+                post("/api/task_statuses").with(token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(data));
+        mockMvc.perform(request).andExpect(status().isConflict());
+    }
+
+    @Test
+    public void testUpdateNotUnique() throws Exception {
+        var taskStatus = modelGenerator.createTaskStatus();
+        taskStatusRepository.save(taskStatus);
+        HashMap<String, String> body = new HashMap<>();
+        body.put("name", taskStatus.getName());
+
+        var request =
+                put("/api/task_statuses/" + testTaskStatus.getId()).with(token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body));
+        mockMvc.perform(request).andExpect(status().isConflict());
+
+        body.clear();
+        body.put("slug", taskStatus.getSlug());
+        request =
+                put("/api/task_statuses/" + testTaskStatus.getId()).with(token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body));
+        mockMvc.perform(request).andExpect(status().isConflict());
     }
 }

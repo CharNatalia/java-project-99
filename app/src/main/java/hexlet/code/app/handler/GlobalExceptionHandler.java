@@ -1,9 +1,8 @@
 package hexlet.code.app.handler;
 
-import hexlet.code.app.exception.ResourceAlreadyExistsException;
-import hexlet.code.app.exception.ResourceInUseException;
 import hexlet.code.app.exception.ResourceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -29,7 +28,7 @@ public class GlobalExceptionHandler {
         exception.getBindingResult()
                 .getFieldErrors()
                 .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
-        return  ResponseEntity.badRequest().body(errors);
+        return ResponseEntity.badRequest().body(errors);
     }
 
     @ExceptionHandler(AuthenticationException.class)
@@ -43,19 +42,17 @@ public class GlobalExceptionHandler {
                 .body("You do not have permission to perform this operation");
     }
 
-    @ExceptionHandler(ResourceInUseException.class)
-    public ResponseEntity<String> handleResourceInUse(ResourceInUseException exception) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
-    }
-
-    @ExceptionHandler(ResourceAlreadyExistsException.class)
-    public ResponseEntity<String> handleResourceAlreadyExists(ResourceAlreadyExistsException exception) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<String> handleDataIntegrityViolation(DataIntegrityViolationException exception) {
+        log.warn("Operation violates data integrity constraints", exception);
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body("Operation violates data integrity constraints");
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleOtherExceptions(Exception ex) {
+    public ResponseEntity<String> handleOtherExceptions(Exception exception) {
+        log.error("Something went wrong", exception);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Something went wrong: " + ex.getMessage());
+                .body("Something went wrong: " + exception.getMessage());
     }
 }

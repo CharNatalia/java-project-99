@@ -3,13 +3,11 @@ package hexlet.code.app.service;
 import hexlet.code.app.dto.UserCreateDTO;
 import hexlet.code.app.dto.UserDTO;
 import hexlet.code.app.dto.UserUpdateDTO;
-import hexlet.code.app.exception.ResourceInUseException;
 import hexlet.code.app.exception.ResourceNotFoundException;
 import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.repository.TaskRepository;
 import hexlet.code.app.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -60,11 +58,6 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void deleteUser(Long id) {
-        var user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User with id = " + id + " not found"));
-        if (taskRepository.existsByAssigneeId(user.getId())) {
-            throw new ResourceInUseException("Cannot delete user: user has assigned tasks");
-        }
         userRepository.deleteById(id);
     }
 }
