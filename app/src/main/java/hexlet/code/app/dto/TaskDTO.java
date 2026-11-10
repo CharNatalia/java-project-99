@@ -2,15 +2,16 @@ package hexlet.code.app.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 @Setter
+@EqualsAndHashCode
 public class TaskDTO {
     private Long id;
     private String title;
@@ -25,22 +26,4 @@ public class TaskDTO {
 
     @JsonProperty("taskLabelIds")
     private List<Long> taskLabelIds;
-
-
-    @Override
-    public final boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        TaskDTO taskDTO = (TaskDTO) o;
-        return getId() != null && Objects.equals(getId(), taskDTO.getId());
-    }
-
-    @Override
-    public final int hashCode() {
-        return getClass().hashCode();
-    }
 }
