@@ -5,7 +5,6 @@ import hexlet.code.app.dto.UserDTO;
 import hexlet.code.app.dto.UserUpdateDTO;
 import hexlet.code.app.exception.ResourceNotFoundException;
 import hexlet.code.app.mapper.UserMapper;
-import hexlet.code.app.repository.TaskRepository;
 import hexlet.code.app.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -21,12 +20,13 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
-    private final TaskRepository taskRepository;
+    private static final String USER_NOT_FOUND = "User not found";
+
 
     @Override
     public UserDTO findById(Long id) {
         var user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User with id = " + id + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
         return userMapper.map(user);
     }
 
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO updateUser(Long id, UserUpdateDTO userUpdateDTO) {
         var user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User with id = " + id + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
         userMapper.update(userUpdateDTO, user);
         if (userUpdateDTO.getPassword() != null) {
             user.setPassword(passwordEncoder.encode(userUpdateDTO.getPassword()));

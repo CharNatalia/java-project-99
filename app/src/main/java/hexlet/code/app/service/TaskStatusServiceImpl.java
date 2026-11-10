@@ -5,7 +5,6 @@ import hexlet.code.app.dto.TaskStatusDTO;
 import hexlet.code.app.dto.TaskStatusUpdateDTO;
 import hexlet.code.app.exception.ResourceNotFoundException;
 import hexlet.code.app.mapper.TaskStatusMapper;
-import hexlet.code.app.repository.TaskRepository;
 import hexlet.code.app.repository.TaskStatusRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -20,12 +19,13 @@ public class TaskStatusServiceImpl implements TaskStatusService {
     private final TaskStatusRepository taskStatusRepository;
     private final TaskStatusMapper taskStatusMapper;
 
-    private final TaskRepository taskRepository;
+    private static final String STATUS_NOT_FOUND = "Status not found";
+
 
     @Override
     public TaskStatusDTO findById(Long id) {
         var taskStatus = taskStatusRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Status not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(STATUS_NOT_FOUND));
         return taskStatusMapper.map(taskStatus);
     }
 
@@ -45,7 +45,7 @@ public class TaskStatusServiceImpl implements TaskStatusService {
     @Override
     public TaskStatusDTO updateStatus(Long id, @Valid TaskStatusUpdateDTO dto) {
         var taskStatus = taskStatusRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Status not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(STATUS_NOT_FOUND));
         taskStatusMapper.update(dto, taskStatus);
         return taskStatusMapper.map(taskStatusRepository.save(taskStatus));
     }
@@ -54,7 +54,7 @@ public class TaskStatusServiceImpl implements TaskStatusService {
     @Override
     public void deleteStatus(Long id) {
         taskStatusRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Status not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(STATUS_NOT_FOUND));
         taskStatusRepository.deleteById(id);
     }
 }

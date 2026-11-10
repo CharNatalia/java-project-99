@@ -6,7 +6,6 @@ import hexlet.code.app.dto.LabelUpdateDTO;
 import hexlet.code.app.exception.ResourceNotFoundException;
 import hexlet.code.app.mapper.LabelMapper;
 import hexlet.code.app.repository.LabelRepository;
-import hexlet.code.app.repository.TaskRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,12 +19,12 @@ public class LabelServiceImpl implements LabelService {
     private final LabelRepository labelRepository;
     private final LabelMapper labelMapper;
 
-    private final TaskRepository taskRepository;
+    private static final String LABEL_NOT_FOUND = "Label not found";
 
     @Override
     public LabelDTO findById(Long id) {
         var label = labelRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Label not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(LABEL_NOT_FOUND));
         return labelMapper.map(label);
     }
 
@@ -46,7 +45,7 @@ public class LabelServiceImpl implements LabelService {
     @Override
     public LabelDTO updateLabel(Long id, LabelUpdateDTO dto) {
         var label = labelRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Label not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(LABEL_NOT_FOUND));
         labelMapper.update(dto, label);
         return labelMapper.map(labelRepository.save(label));
     }

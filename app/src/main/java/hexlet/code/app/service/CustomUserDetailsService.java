@@ -19,7 +19,7 @@ public class CustomUserDetailsService implements UserDetailsManager {
         var user =
                 userRepository
                         .findByEmail(email)
-                        .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
+                        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return user;
     }
 
