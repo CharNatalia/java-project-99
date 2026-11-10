@@ -109,8 +109,8 @@ public class User implements UserDetails {
         if (thisEffectiveClass != oEffectiveClass) {
             return false;
         }
-        User student = (User) o;
-        return getId() != null && Objects.equals(getId(), student.getId());
+        User user = (User) o;
+        return getId() != null && Objects.equals(getId(), user.getId());
     }
 
     @Override

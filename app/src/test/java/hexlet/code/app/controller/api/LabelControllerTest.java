@@ -174,4 +174,40 @@ public class LabelControllerTest {
         var deletedLabel = labelRepository.findById(testLabel.getId()).orElse(null);
         assertNull(deletedLabel);
     }
+
+    @Test
+    public void testEqualsAndHashCodeLabel() {
+        var first = modelGenerator.createLabel();
+        var second = modelGenerator.createLabel();
+
+        assertThat(first).isEqualTo(first);
+        assertThat(first).isNotEqualTo(null);
+        assertThat(first).isNotEqualTo("label");
+        assertThat(first).isNotEqualTo(second);
+
+        first.setId(1L);
+        second.setId(1L);
+
+        assertThat(first).isEqualTo(second);
+        assertThat(second).isEqualTo(first);
+        assertThat(first.hashCode()).isEqualTo(second.hashCode());
+
+        second.setId(2L);
+
+        assertThat(first).isNotEqualTo(second);
+    }
+
+    @Test
+    public void testEqualsAndHashCodeLabelDTO() {
+        var label1 = labelRepository.save(modelGenerator.createLabel());
+        var label2 = labelRepository.save(modelGenerator.createLabel());
+        var first = labelMapper.map(label1);
+        var second = labelMapper.map(label2);
+
+        assertThat(first).isEqualTo(first);
+        assertThat(first).isNotEqualTo(null);
+        assertThat(first).isNotEqualTo("label");
+        assertThat(first.hashCode()).isEqualTo(labelMapper.map(label1).hashCode());
+        assertThat(first).isNotEqualTo(second);
+    }
 }

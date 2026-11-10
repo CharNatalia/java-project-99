@@ -59,8 +59,8 @@ public class Label {
         if (thisEffectiveClass != oEffectiveClass) {
             return false;
         }
-        Label student = (Label) o;
-        return getId() != null && Objects.equals(getId(), student.getId());
+        Label label = (Label) o;
+        return getId() != null && Objects.equals(getId(), label.getId());
     }
 
     @Override

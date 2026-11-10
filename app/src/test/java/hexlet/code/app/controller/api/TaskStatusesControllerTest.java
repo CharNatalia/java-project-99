@@ -214,4 +214,40 @@ public class TaskStatusesControllerTest {
                         .content(objectMapper.writeValueAsString(body));
         mockMvc.perform(request).andExpect(status().isConflict());
     }
+
+    @Test
+    public void testEqualsAndHashCodeTaskStatus() {
+        var first = modelGenerator.createTaskStatus();
+        var second = modelGenerator.createTaskStatus();
+
+        assertThat(first).isEqualTo(first);
+        assertThat(first).isNotEqualTo(null);
+        assertThat(first).isNotEqualTo("taskStatus");
+        assertThat(first).isNotEqualTo(second);
+
+        first.setId(1L);
+        second.setId(1L);
+
+        assertThat(first).isEqualTo(second);
+        assertThat(second).isEqualTo(first);
+        assertThat(first.hashCode()).isEqualTo(second.hashCode());
+
+        second.setId(2L);
+
+        assertThat(first).isNotEqualTo(second);
+    }
+
+    @Test
+    public void testEqualsAndHashCodeTaskStatusDTO() {
+        var taskStatus1 = taskStatusRepository.save(modelGenerator.createTaskStatus());
+        var taskStatus2 = taskStatusRepository.save(modelGenerator.createTaskStatus());
+        var first = taskStatusMapper.map(taskStatus1);
+        var second = taskStatusMapper.map(taskStatus2);
+
+        assertThat(first).isEqualTo(first);
+        assertThat(first).isNotEqualTo(null);
+        assertThat(first).isNotEqualTo("taskStatus");
+        assertThat(first.hashCode()).isEqualTo(taskStatusMapper.map(taskStatus1).hashCode());
+        assertThat(first).isNotEqualTo(second);
+    }
 }

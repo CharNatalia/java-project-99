@@ -2,7 +2,6 @@ package hexlet.code.app.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.proxy.HibernateProxy;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -20,26 +19,15 @@ public class TaskStatusDTO {
         if (this == o) {
             return true;
         }
-        if (o == null) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Class<?> oEffectiveClass = o instanceof HibernateProxy
-                ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass()
-                : o.getClass();
-        Class<?> thisEffectiveClass = this instanceof HibernateProxy
-                ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass()
-                : this.getClass();
-        if (thisEffectiveClass != oEffectiveClass) {
-            return false;
-        }
-        TaskStatusDTO student = (TaskStatusDTO) o;
-        return getId() != null && Objects.equals(getId(), student.getId());
+        TaskStatusDTO taskStatusDTO = (TaskStatusDTO) o;
+        return getId() != null && Objects.equals(getId(), taskStatusDTO.getId());
     }
 
     @Override
     public final int hashCode() {
-        return this instanceof HibernateProxy
-                ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode()
-                : getClass().hashCode();
+        return getClass().hashCode();
     }
 }

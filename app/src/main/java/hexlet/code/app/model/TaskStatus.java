@@ -56,8 +56,8 @@ public class TaskStatus {
         if (thisEffectiveClass != oEffectiveClass) {
             return false;
         }
-        TaskStatus student = (TaskStatus) o;
-        return getId() != null && Objects.equals(getId(), student.getId());
+        TaskStatus taskStatus = (TaskStatus) o;
+        return getId() != null && Objects.equals(getId(), taskStatus.getId());
     }
 
     @Override

@@ -194,4 +194,40 @@ public class UsersControllerTest {
 
     }
 
+    @Test
+    public void testEqualsAndHashCodeUser() {
+        var first = modelGenerator.createUser();
+        var second = modelGenerator.createUser();
+
+        assertThat(first).isEqualTo(first);
+        assertThat(first).isNotEqualTo(null);
+        assertThat(first).isNotEqualTo("user");
+        assertThat(first).isNotEqualTo(second);
+
+        first.setId(1L);
+        second.setId(1L);
+
+        assertThat(first).isEqualTo(second);
+        assertThat(second).isEqualTo(first);
+        assertThat(first.hashCode()).isEqualTo(second.hashCode());
+
+        second.setId(2L);
+
+        assertThat(first).isNotEqualTo(second);
+    }
+
+    @Test
+    public void testEqualsAndHashCodeUserDTO() {
+        var user1 = userRepository.save(modelGenerator.createUser());
+        var user2 = userRepository.save(modelGenerator.createUser());
+        var first = userMapper.map(user1);
+        var second = userMapper.map(user2);
+
+        assertThat(first).isEqualTo(first);
+        assertThat(first).isNotEqualTo(null);
+        assertThat(first).isNotEqualTo("user");
+        assertThat(first.hashCode()).isEqualTo(userMapper.map(user1).hashCode());
+        assertThat(first).isNotEqualTo(second);
+    }
+
 }

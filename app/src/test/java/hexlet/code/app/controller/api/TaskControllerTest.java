@@ -205,6 +205,7 @@ public class TaskControllerTest {
                 .set(Select.field(TaskCreateDTO::getTitle), faker.name().title())
                 .create();
 
+
         var request = post("/api/tasks").with(token)
                 .contentType(MediaType.APPLICATION_JSON);
 
@@ -267,5 +268,42 @@ public class TaskControllerTest {
                 .andExpect(status().isNoContent());
         var deletedTask = taskRepository.findById(testTask.getId()).orElse(null);
         assertNull(deletedTask);
+    }
+
+    @Test
+    public void testEqualsAndHashCodeTask() {
+        var first = testTask;
+        var second = modelGenerator.createTask();
+        second.setTaskStatus(testTaskStatus);
+
+        assertThat(first).isEqualTo(first);
+        assertThat(first).isNotEqualTo(null);
+        assertThat(first).isNotEqualTo("task");
+        assertThat(first).isNotEqualTo(second);
+
+        first.setId(1L);
+        second.setId(1L);
+
+        assertThat(first).isEqualTo(second);
+        assertThat(second).isEqualTo(first);
+        assertThat(first.hashCode()).isEqualTo(second.hashCode());
+
+        second.setId(2L);
+
+        assertThat(first).isNotEqualTo(second);
+    }
+
+    @Test
+    public void testEqualsAndHashCodeTaskDTO() {
+        var first = taskMapper.map(testTask);
+        var task = modelGenerator.createTask();
+        task.setTaskStatus(testTaskStatus);
+        var second = taskMapper.map(task);
+
+        assertThat(first).isEqualTo(first);
+        assertThat(first).isNotEqualTo(null);
+        assertThat(first).isNotEqualTo("task");
+        assertThat(second.hashCode()).isEqualTo(taskMapper.map(task).hashCode());
+        assertThat(first).isNotEqualTo(second);
     }
 }

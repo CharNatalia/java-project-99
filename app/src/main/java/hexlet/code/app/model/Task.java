@@ -67,11 +67,6 @@ public class Task {
         label.getTasks().add(this);
     }
 
-    public void removeLabel(Label label) {
-        labels.remove(label);
-        label.getTasks().remove(this);
-    }
-
     @Override
     public final boolean equals(Object o) {
         if (this == o) {
@@ -89,8 +84,8 @@ public class Task {
         if (thisEffectiveClass != oEffectiveClass) {
             return false;
         }
-        Task student = (Task) o;
-        return getId() != null && Objects.equals(getId(), student.getId());
+        Task task = (Task) o;
+        return getId() != null && Objects.equals(getId(), task.getId());
     }
 
     @Override
