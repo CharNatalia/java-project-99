@@ -2,7 +2,6 @@ package hexlet.code.app.controller.api;
 
 import hexlet.code.app.dto.AuthRequest;
 import hexlet.code.app.dto.UserCreateDTO;
-import hexlet.code.app.model.User;
 import hexlet.code.app.repository.UserRepository;
 import hexlet.code.app.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,13 +11,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.HashMap;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -94,7 +90,7 @@ public class AuthenticationControllerTest {
 
         var token = mockMvc.perform(request).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
         mockMvc.perform(get("/api/users").
-                header("Authorization", "Bearer " + token))
+                        header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
     }
 }
