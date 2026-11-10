@@ -6,6 +6,7 @@ import hexlet.code.app.dto.TaskParamsDTO;
 import hexlet.code.app.dto.TaskUpdateDTO;
 import hexlet.code.app.exception.ResourceNotFoundException;
 import hexlet.code.app.mapper.TaskMapper;
+import hexlet.code.app.model.Task;
 import hexlet.code.app.repository.LabelRepository;
 import hexlet.code.app.repository.TaskRepository;
 import hexlet.code.app.repository.TaskStatusRepository;
@@ -46,26 +47,8 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     @Override
     public TaskDTO createTask(TaskCreateDTO dto) {
-        var status = statusRepository.findBySlug(dto.getStatus())
-                .orElseThrow(() -> new ResourceNotFoundException("Status not found"));
-
         var task = taskMapper.map(dto);
-        task.setTaskStatus(status);
-
-        if (dto.getAssigneeId() != null) {
-            var user = userRepository.findById(dto.getAssigneeId())
-                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-            task.setAssignee(user);
-        }
-
-        if (dto.getTaskLabelIds() != null) {
-            for (var labelId : dto.getTaskLabelIds()) {
-                var label = labelRepository.findById(labelId)
-                        .orElseThrow(() -> new ResourceNotFoundException("Label not found"));
-                task.addLabel(label);
-            }
-        }
-
+        setRelations(task, dto.getStatus(), dto.getAssigneeId(), dto.getTaskLabelIds());
         return taskMapper.map(taskRepository.save(task));
     }
 
@@ -76,25 +59,7 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
         taskMapper.update(dto, task);
 
-        if (dto.getStatus() != null) {
-            var status = statusRepository.findBySlug(dto.getStatus())
-                    .orElseThrow(() -> new ResourceNotFoundException("Status not found"));
-            task.setTaskStatus(status);
-        }
-
-        if (dto.getAssigneeId() != null) {
-            var user = userRepository.findById(dto.getAssigneeId())
-                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-            task.setAssignee(user);
-        }
-
-        if (dto.getTaskLabelIds() != null) {
-            for (var labelId : dto.getTaskLabelIds()) {
-                var label = labelRepository.findById(labelId)
-                        .orElseThrow(() -> new ResourceNotFoundException("Label not found"));
-                task.addLabel(label);
-            }
-        }
+        setRelations(task, dto.getStatus(), dto.getAssigneeId(), dto.getTaskLabelIds());
 
         return taskMapper.map(taskRepository.save(task));
     }
@@ -103,5 +68,27 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void deleteTask(Long id) {
         taskRepository.deleteById(id);
+    }
+
+    private void setRelations(Task task, String slug, Long userId, List<Long> labelIds) {
+        if (slug != null) {
+            var status = statusRepository.findBySlug(slug)
+                    .orElseThrow(() -> new ResourceNotFoundException("Status not found"));
+            task.setTaskStatus(status);
+        }
+
+        if (userId != null) {
+            var user = userRepository.findById(userId)
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+            task.setAssignee(user);
+        }
+
+        if (labelIds != null) {
+            for (var labelId : labelIds) {
+                var label = labelRepository.findById(labelId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Label not found"));
+                task.addLabel(label);
+            }
+        }
     }
 }
