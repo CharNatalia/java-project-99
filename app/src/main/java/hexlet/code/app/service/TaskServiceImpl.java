@@ -76,18 +76,21 @@ public class TaskServiceImpl implements TaskService {
 
     private void setRelations(Task task, String slug, Long userId, List<Long> labelIds) {
         if (slug != null) {
-            var status = statusRepository.findBySlug(slug).orElseThrow(() -> new ResourceNotFoundException(STATUS_NOT_FOUND));
+            var status = statusRepository.findBySlug(slug)
+                    .orElseThrow(() -> new ResourceNotFoundException(STATUS_NOT_FOUND));
             task.setTaskStatus(status);
         }
 
         if (userId != null) {
-            var user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
+            var user = userRepository.findById(userId)
+                    .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
             task.setAssignee(user);
         }
 
         if (labelIds != null) {
             for (var labelId : labelIds) {
-                var label = labelRepository.findById(labelId).orElseThrow(() -> new ResourceNotFoundException(LABEL_NOT_FOUND));
+                var label = labelRepository.findById(labelId)
+                        .orElseThrow(() -> new ResourceNotFoundException(LABEL_NOT_FOUND));
                 task.addLabel(label);
             }
         }
